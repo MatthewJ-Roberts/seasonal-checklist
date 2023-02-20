@@ -37,10 +37,11 @@ auth.onAuthStateChanged((user) => {
 
 const database = firebase.firestore();
 
-const addRow = document.getElementById("addRowButton");
 const table = document.getElementById("tableBody");
+const searchButton = document.getElementById("searchButton");
 
-let databaseRef;
+var userRef;
+var newRef;
 // Turns off real-time database updates --> Saves cost
 let unsubscribe;
 
@@ -48,13 +49,14 @@ auth.onAuthStateChanged((user) => {
 
     if (user) {
         
-        databaseRef = database.collection("anime");
+        // Create the "anime" collection
+        userRef = database.collection('users').doc(user.uid).collection("anime");
 
-        addRow.onclick = () => {
+        searchButton.onclick = () => {
 
             const { serverTimestamp } = firebase.firestore.FieldValue;
 
-            databaseRef.add({
+            var data = {
                 uid: user.uid,
                 Name: "Bleach",
                 Studio: "Pierrot",
@@ -64,24 +66,16 @@ auth.onAuthStateChanged((user) => {
                 PersonalRating: "8.75",
                 Broadcasts: "Mondays",
                 createdAt: serverTimestamp()
-            });
+            }
+
+            newRef = database.collection('users').doc(user.uid).collection("anime").doc(data.Name);
+            newRef.set(data)
+            .then(function() {
+                console.log('Document added!');
+              })
 
         }
 
-        unsubscribe = databaseRef
-            .where("uid", "==", user.uid)
-            .onSnapshot(querySnapshot => {
-
-                const items = querySnapshot.docs.map(doc => {
-
-                    
-
-                })
-
-            })
-
-    } else {
-        unsubscribe && unsubscribe();
-    }
+    } 
 
 });
