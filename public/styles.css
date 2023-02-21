@@ -6,3 +6,9 @@
 body {
     background-color: #202529;
 }
+
+#animeList {
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
