@@ -70,6 +70,7 @@ auth.onAuthStateChanged((user) => {
                         const option = document.createElement('a');
                         option.classList.add('dropdown-item');
                         option.textContent = anime.title;
+                        option.setAttribute('data-anime', JSON.stringify(anime));
                         animeList.appendChild(option);
                     });
 
@@ -80,8 +81,6 @@ auth.onAuthStateChanged((user) => {
                     console.error(error);
                 });
             
-            pushToDB(user);
-            pullFromDB(user);
         });
 
         // Hide the dropdown menu when the user clicks outside of it
@@ -94,8 +93,30 @@ auth.onAuthStateChanged((user) => {
         // Update the search input value when the user clicks on a dropdown item
         animeList.addEventListener('click', event => {
             if (event.target.classList.contains('dropdown-item')) {
+                const { serverTimestamp } = firebase.firestore.FieldValue;
                 searchInput.value = event.target.textContent;
+                const anime = JSON.parse(event.target.getAttribute('data-anime'));
                 animeList.classList.remove('show');
+                animeList.innerHTML = ''; // Clear the dropdown content
+
+                const genres = anime.genres.map(genre => genre.name).join(', ');
+                const studios = anime.studios.map(studio => studio.name).join(', ');
+
+                var animeData = {
+                    uid: user.uid,
+                    Name: anime.title + " (" + anime.title_english + ")",
+                    Studio: studios,
+                    Genre: genres,
+                    Episodes: anime.episodes,
+                    MALRating: anime.score,
+                    PersonalRating: "N/A",
+                    Broadcasts: anime.broadcast.string,
+                    createdAt: serverTimestamp()
+                }
+                console.log(animeData);
+
+                pushToDB(user, animeData);
+                pullFromDB(user);
             }
         });
 
@@ -111,21 +132,7 @@ auth.onAuthStateChanged((user) => {
 
 });
 
-function pushToDB(user) {
-    const { serverTimestamp } = firebase.firestore.FieldValue;
-
-    var data = {
-        uid: user.uid,
-        Name: "test",
-        Studio: "Pierrot",
-        Genre: "Action, Adventure, Fantasy",
-        Episodes: "13",
-        MALRating: "9.11",
-        PersonalRating: "8.75",
-        Broadcasts: "Mondays",
-        createdAt: serverTimestamp()
-    }
-
+function pushToDB(user, data) {
     newRef = database.collection('users').doc(user.uid).collection("anime").doc(data.Name);
     newRef.set(data)
     .then(function() {
