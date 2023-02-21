@@ -11,4 +11,17 @@ body {
     position: absolute;
     top: 100%;
     left: 0;
-  }
+}
+
+/* .dropdown-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+  
+.dropdown-item:hover {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+} */

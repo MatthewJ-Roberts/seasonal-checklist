@@ -54,28 +54,27 @@ auth.onAuthStateChanged((user) => {
 
         const searchForm = document.getElementById('searchForm');
         const animeList = document.getElementById('animeList');
+        const searchInput = document.getElementById('searchInput');
 
         searchForm.addEventListener('submit', event => {
             event.preventDefault(); // Prevent form submission from reloading the page
 
-            const searchInput = document.getElementById('searchInput');
             const searchQuery = searchInput.value;
 
             fetch(`https://api.jikan.moe/v4/anime?q=${searchQuery}`)
                 .then(response => response.json())
                 .then(data => {
-                    animeList.innerHTML = ''; // Clear the datalist
-                    console.log(data);
+                    animeList.innerHTML = ''; // Clear the dropdown content
+
                     data.data.forEach(anime => {
-                        const option = document.createElement('option');
-                        option.text = anime.title;
-                        console.log(option); // Log the option to the console
+                        const option = document.createElement('a');
+                        option.classList.add('dropdown-item');
+                        option.textContent = anime.title;
                         animeList.appendChild(option);
                     });
 
-                    // Open the datalist
-                    searchInput.focus();
-                    searchInput.click();
+                    // Show the dropdown menu
+                    animeList.classList.add('show');
                 })
                 .catch(error => {
                     console.error(error);
@@ -84,6 +83,27 @@ auth.onAuthStateChanged((user) => {
             pushToDB(user);
             pullFromDB(user);
         });
+
+        // Hide the dropdown menu when the user clicks outside of it
+        document.addEventListener('click', event => {
+            if (!event.target.closest('.dropdown')) {
+                animeList.classList.remove('show');
+            }
+        });
+        
+        // Update the search input value when the user clicks on a dropdown item
+        animeList.addEventListener('click', event => {
+            if (event.target.classList.contains('dropdown-item')) {
+                searchInput.value = event.target.textContent;
+                animeList.classList.remove('show');
+            }
+        });
+
+        searchInput.addEventListener('click', event => {
+            if (event.target.closest('.dropdown') && searchInput.value != "") {
+                animeList.classList.add('show');
+            }
+        })
 
         pullFromDB(user);
 

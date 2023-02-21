@@ -100,9 +100,11 @@
                       </li>
                   </ul>
                   <form id="searchForm" class="d-flex my-2 my-lg-0">
-                      <input id="searchInput" class="form-control me-sm-2" type="text" placeholder="Search anime..." list="animeList">
+                      <div class="dropdown">
+                        <input id="searchInput" class="form-control me-sm-2" type="text" placeholder="Search anime...">
+                        <div class="dropdown-menu dropdown-menu-dark" id="animeList"></div>
+                      </div>
                       <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
-                      <datalist id="animeList"></datalist>
                   </form>
               </div>
         </div>
