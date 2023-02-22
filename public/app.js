@@ -38,7 +38,6 @@ auth.onAuthStateChanged((user) => {
 const database = firebase.firestore();
 
 const table = document.getElementById("tableBody");
-const searchButton = document.getElementById("searchButton");
 
 var userRef;
 var newRef;
@@ -52,11 +51,28 @@ auth.onAuthStateChanged((user) => {
         // Create the "anime" collection
         userRef = database.collection('users').doc(user.uid).collection("anime");
 
-        const searchForm = document.getElementById('searchForm');
         const animeList = document.getElementById('animeList');
         const searchInput = document.getElementById('searchInput');
 
-        searchForm.addEventListener('submit', event => {
+        var selectedYear = document.getElementById("selectedYear");
+        var selectedSeason = document.getElementById("selectedSeason");
+
+        const dropdownYear = document.getElementById("yearDropdown");
+        const dropdownSeason = document.getElementById("seasonDropdown");
+        
+        dropdownYear.addEventListener('click', event => {
+
+            selectedYear.innerHTML = event.target.textContent;
+            pullFromDB(user, selectedSeason, selectedYear);
+        })
+
+        dropdownSeason.addEventListener('click', event => {
+
+            selectedSeason.innerHTML = event.target.textContent;
+            pullFromDB(user, selectedSeason, selectedYear);
+        })
+        
+        searchInput.addEventListener('input', event => {
             event.preventDefault(); // Prevent form submission from reloading the page
 
             const searchQuery = searchInput.value;
@@ -111,12 +127,14 @@ auth.onAuthStateChanged((user) => {
                     MALRating: anime.score,
                     PersonalRating: "N/A",
                     Broadcasts: anime.broadcast.string,
+                    Season: anime.season,
+                    Year: anime.year,
                     createdAt: serverTimestamp()
                 }
                 console.log(animeData);
 
                 pushToDB(user, animeData);
-                pullFromDB(user);
+                pullFromDB(user, selectedSeason, selectedYear);
             }
         });
 
@@ -126,7 +144,7 @@ auth.onAuthStateChanged((user) => {
             }
         })
 
-        pullFromDB(user);
+        pullFromDB(user, selectedSeason, selectedYear);
 
     } 
 
@@ -140,7 +158,7 @@ function pushToDB(user, data) {
     })
 }
 
-function pullFromDB(user) {
+function pullFromDB(user, selectedSeason, selectedYear) {
     clearTable();
 
     const table = document.getElementById("seasonalTable").getElementsByTagName('tbody')[0];
@@ -149,37 +167,44 @@ function pullFromDB(user) {
     database.collection('users').doc(user.uid).collection("anime").get()
     .then(querySnapshot => {
         querySnapshot.forEach(doc => {
-        const data = doc.data();
-        const tr = document.createElement('tr');
-        const rowTd = document.createElement('td');
-        const nameTd = document.createElement('td');
-        const studioTd = document.createElement('td');
-        const genreTd = document.createElement('td');
-        const episodesTd = document.createElement('td');
-        const malTd = document.createElement('td');
-        const personalTd = document.createElement('td');
-        const broadcastTd = document.createElement('td');
+            const data = doc.data();
+            if ((data.Year == selectedYear.innerHTML && data.Season == selectedSeason.innerHTML) || 
+            (data.Year == selectedYear.innerHTML && selectedSeason.innerHTML == "All") || 
+            (selectedYear.innerHTML == "All" && data.Season == selectedSeason.innerHTML) || 
+            (selectedYear.innerHTML == "All" && selectedSeason.innerHTML == "All")) {
+                
+                const tr = document.createElement('tr');
+                const rowTd = document.createElement('td');
+                const nameTd = document.createElement('td');
+                const studioTd = document.createElement('td');
+                const genreTd = document.createElement('td');
+                const episodesTd = document.createElement('td');
+                const malTd = document.createElement('td');
+                const personalTd = document.createElement('td');
+                const broadcastTd = document.createElement('td');
+                
+                rowTd.appendChild(document.createTextNode(rowCount));
+                nameTd.appendChild(document.createTextNode(data.Name));
+                studioTd.appendChild(document.createTextNode(data.Studio));
+                genreTd.appendChild(document.createTextNode(data.Genre));
+                episodesTd.appendChild(document.createTextNode(data.Episodes));
+                malTd.appendChild(document.createTextNode(data.MALRating));
+                personalTd.appendChild(document.createTextNode(data.PersonalRating));
+                broadcastTd.appendChild(document.createTextNode(data.Broadcasts));
+                
+                tr.appendChild(rowTd);
+                tr.appendChild(nameTd);
+                tr.appendChild(studioTd);
+                tr.appendChild(genreTd);
+                tr.appendChild(episodesTd);
+                tr.appendChild(malTd);
+                tr.appendChild(personalTd);
+                tr.appendChild(broadcastTd);
+            
+                table.appendChild(tr);
+                rowCount++;
+            }
         
-        rowTd.appendChild(document.createTextNode(rowCount));
-        nameTd.appendChild(document.createTextNode(data.Name));
-        studioTd.appendChild(document.createTextNode(data.Studio));
-        genreTd.appendChild(document.createTextNode(data.Genre));
-        episodesTd.appendChild(document.createTextNode(data.Episodes));
-        malTd.appendChild(document.createTextNode(data.MALRating));
-        personalTd.appendChild(document.createTextNode(data.PersonalRating));
-        broadcastTd.appendChild(document.createTextNode(data.Broadcasts));
-        
-        tr.appendChild(rowTd);
-        tr.appendChild(nameTd);
-        tr.appendChild(studioTd);
-        tr.appendChild(genreTd);
-        tr.appendChild(episodesTd);
-        tr.appendChild(malTd);
-        tr.appendChild(personalTd);
-        tr.appendChild(broadcastTd);
-    
-        table.appendChild(tr);
-        rowCount++;
         });
     })
 
@@ -187,8 +212,5 @@ function pullFromDB(user) {
 
 function clearTable() {
     const table = document.getElementById("seasonalTable").getElementsByTagName('tbody')[0];
-    const rowCount = table.rows.length;
-    for (let i = rowCount - 1; i > 0; i--) {
-        table.deleteRow(i);
-    }
+    table.innerHTML = "";
 }

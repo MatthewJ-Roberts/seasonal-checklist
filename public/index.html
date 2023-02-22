@@ -79,24 +79,27 @@
                       </li>
                       <li class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle active" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Year</a>
-                          <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownId">
-                              <a class="dropdown-item" href="#">Current</a>
+                          <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownId" id="yearDropdown">
+                              <a class="dropdown-item" href="#">All</a>
                               <a class="dropdown-item" href="#">2023</a>
                               <a class="dropdown-item" href="#">2022</a>
                           </div>
                       </li>
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle active" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Season</a>
-                        <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownId">
+                        <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownId" id="seasonDropdown">
                             <a class="dropdown-item" href="#">All</a>
-                            <a class="dropdown-item" href="#">Winter</a>
-                            <a class="dropdown-item" href="#">Spring</a>
-                            <a class="dropdown-item" href="#">Summer</a>
-                            <a class="dropdown-item" href="#">Fall</a>
+                            <a class="dropdown-item" href="#">winter</a>
+                            <a class="dropdown-item" href="#">spring</a>
+                            <a class="dropdown-item" href="#">summer</a>
+                            <a class="dropdown-item" href="#">fall</a>
                         </div>
-                    </li>
+                      </li>
                       <li class="nav-item">
-                          <a class="nav-link active disabled" href="#" aria-current="page">Selected: Fall 2022 <span class="visually-hidden">(current)</span></a>
+                        <a class="nav-link active disabled" href="#" aria-current="page"  id="selectedSeason">All</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link active disabled" href="#" aria-current="page" id="selectedYear">All</a>
                       </li>
                   </ul>
                   <form id="searchForm" class="d-flex my-2 my-lg-0">
@@ -104,7 +107,6 @@
                         <input id="searchInput" class="form-control me-sm-2" type="text" placeholder="Search anime...">
                         <div class="dropdown-menu dropdown-menu-dark" id="animeList"></div>
                       </div>
-                      <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
                   </form>
               </div>
         </div>
