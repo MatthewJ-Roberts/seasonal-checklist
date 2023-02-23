@@ -158,6 +158,21 @@ function pushToDB(user, data) {
     })
 }
 
+function deleteFromDB(user, id) {
+    newRef = database.collection('users').doc(user.uid).collection("anime").doc(id);
+    newRef.delete()
+    .then(() => {
+        console.log('Document successfully deleted');
+    })
+    .catch((error) => {
+        console.error('Error removing document: ', error);
+    });
+    
+    var selectedYear = document.getElementById("selectedYear");
+    var selectedSeason = document.getElementById("selectedSeason");
+    pullFromDB(user, selectedSeason, selectedYear);
+}
+
 function pullFromDB(user, selectedSeason, selectedYear) {
     clearTable();
 
@@ -192,7 +207,19 @@ function pullFromDB(user, selectedSeason, selectedYear) {
                 const personalTd = document.createElement('td');
                 const broadcastTd = document.createElement('td');
                 
-                rowTd.appendChild(document.createTextNode(rowCount));
+                let button = document.createElement('button');
+                button.innerText = rowCount;
+                button.className = "btn btn-primary btn-dark";
+
+                button.addEventListener('click', function() {
+                    let text = "Are you sure you want to delete '" + doc.id + "'?";
+                    if (confirm(text) == true) {
+                        deleteFromDB(user, doc.id);
+                        console.log("Document deleted!");
+                    }
+                })
+
+                rowTd.appendChild(button);
                 nameTd.appendChild(document.createTextNode(data.Name));
                 studioTd.appendChild(document.createTextNode(data.Studio));
                 genreTd.appendChild(document.createTextNode(data.Genre));
