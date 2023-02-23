@@ -37,12 +37,12 @@ auth.onAuthStateChanged((user) => {
 
 const database = firebase.firestore();
 
-const table = document.getElementById("tableBody");
-
 var userRef;
 var newRef;
 // Turns off real-time database updates --> Saves cost
 let unsubscribe;
+
+var dropdownYearArray = [];
 
 auth.onAuthStateChanged((user) => {
 
@@ -59,7 +59,7 @@ auth.onAuthStateChanged((user) => {
 
         const dropdownYear = document.getElementById("yearDropdown");
         const dropdownSeason = document.getElementById("seasonDropdown");
-        
+
         dropdownYear.addEventListener('click', event => {
 
             selectedYear.innerHTML = event.target.textContent;
@@ -164,10 +164,19 @@ function pullFromDB(user, selectedSeason, selectedYear) {
     const table = document.getElementById("seasonalTable").getElementsByTagName('tbody')[0];
     var rowCount = 1;
 
+    // Resetting year dropdown elements
+    const dropdownYear = document.getElementById("yearDropdown");
+    const option = document.createElement("a");
+    option.classList.add('dropdown-item');
+    option.textContent = "All";
+    dropdownYear.innerHTML = "";
+    dropdownYear.appendChild(option);
+
     database.collection('users').doc(user.uid).collection("anime").get()
     .then(querySnapshot => {
         querySnapshot.forEach(doc => {
             const data = doc.data();
+            addToYearArray(data.Year);
             if ((data.Year == selectedYear.innerHTML && data.Season == selectedSeason.innerHTML) || 
             (data.Year == selectedYear.innerHTML && selectedSeason.innerHTML == "All") || 
             (selectedYear.innerHTML == "All" && data.Season == selectedSeason.innerHTML) || 
@@ -206,6 +215,7 @@ function pullFromDB(user, selectedSeason, selectedYear) {
             }
         
         });
+        addToYearDropdown();
     })
 
 }
@@ -213,4 +223,26 @@ function pullFromDB(user, selectedSeason, selectedYear) {
 function clearTable() {
     const table = document.getElementById("seasonalTable").getElementsByTagName('tbody')[0];
     table.innerHTML = "";
+}
+
+function addToYearDropdown() {
+    // Get the dropdown element
+    const dropdownYear = document.getElementById("yearDropdown");
+    dropdownYearArray.sort()
+    dropdownYearArray.reverse();
+    dropdownYearArray.forEach(element => {
+        const option = document.createElement("a");
+        option.classList.add('dropdown-item');
+        option.textContent = element;
+        dropdownYear.appendChild(option);
+    });
+    
+}
+
+function addToYearArray(element) {
+
+    if (!dropdownYearArray.includes(element) && element != null && element != "") {
+        dropdownYearArray.push(element);
+    }
+
 }
