@@ -176,8 +176,10 @@ function deleteFromDB(user, id) {
 function pullFromDB(user, selectedSeason, selectedYear) {
     clearTable();
 
-    const table = document.getElementById("seasonalTable").getElementsByTagName('tbody')[0];
-    var rowCount = 1;
+    const winterTable = document.getElementById("winterTable").getElementsByTagName('tbody')[0];
+    const springTable = document.getElementById("springTable").getElementsByTagName('tbody')[0];
+    const summerTable = document.getElementById("summerTable").getElementsByTagName('tbody')[0];
+    const fallTable = document.getElementById("fallTable").getElementsByTagName('tbody')[0];
 
     // Resetting year dropdown elements
     const dropdownYear = document.getElementById("yearDropdown");
@@ -208,8 +210,8 @@ function pullFromDB(user, selectedSeason, selectedYear) {
                 const broadcastTd = document.createElement('td');
                 
                 let button = document.createElement('button');
-                button.innerText = rowCount;
-                button.className = "btn btn-primary btn-dark";
+                button.innerText = "Remove";
+                button.className = "btn btn-primary btn-dark btn-outline-danger";
 
                 button.addEventListener('click', function() {
                     let text = "Are you sure you want to delete '" + doc.id + "'?";
@@ -236,9 +238,23 @@ function pullFromDB(user, selectedSeason, selectedYear) {
                 tr.appendChild(malTd);
                 tr.appendChild(personalTd);
                 tr.appendChild(broadcastTd);
-            
-                table.appendChild(tr);
-                rowCount++;
+                
+                switch (data.Season) {
+                    case "winter":
+                        winterTable.appendChild(tr);
+                        break;
+                    case "spring":
+                        springTable.appendChild(tr);
+                        break;
+                    case "summer":
+                        summerTable.appendChild(tr);
+                        break;
+                    // Default = fall
+                    default:
+                        fallTable.appendChild(tr);
+                        break;
+                }
+                
             }
         
         });
@@ -248,7 +264,13 @@ function pullFromDB(user, selectedSeason, selectedYear) {
 }
 
 function clearTable() {
-    const table = document.getElementById("seasonalTable").getElementsByTagName('tbody')[0];
+    var table = document.getElementById("winterTable").getElementsByTagName('tbody')[0];
+    table.innerHTML = "";
+    table = document.getElementById("springTable").getElementsByTagName('tbody')[0];
+    table.innerHTML = "";
+    table = document.getElementById("summerTable").getElementsByTagName('tbody')[0];
+    table.innerHTML = "";
+    table = document.getElementById("fallTable").getElementsByTagName('tbody')[0];
     table.innerHTML = "";
 }
 

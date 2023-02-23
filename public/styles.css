@@ -5,12 +5,23 @@
 
 body {
     background-color: #202529;
+    
+}
+
+caption {
+    color: white;
+    padding-left: 1%;
+    font-size: larger;
 }
 
 #animeList {
     position: absolute;
     top: 100%;
     left: 0;
+}
+
+table {
+    width: 100%;
 }
 
 /* .dropdown-item {
