@@ -158,6 +158,23 @@ function pushToDB(user, data) {
     })
 }
 
+function updateRating(user, data, newRating) {
+    newRef = database.collection('users').doc(user.uid).collection("anime").doc(data.Name);
+    newRef.update({
+        PersonalRating: newRating
+    })
+    .then(() => {
+        console.log('Document updated successfully!');
+    })
+    .catch((error) => {
+        console.error('Error updating document: ', error);
+    });
+
+    var selectedYear = document.getElementById("selectedYear");
+    var selectedSeason = document.getElementById("selectedSeason");
+    pullFromDB(user, selectedSeason, selectedYear);
+}
+
 function deleteFromDB(user, id) {
     newRef = database.collection('users').doc(user.uid).collection("anime").doc(id);
     newRef.delete()
@@ -209,11 +226,11 @@ function pullFromDB(user, selectedSeason, selectedYear) {
                 const personalTd = document.createElement('td');
                 const broadcastTd = document.createElement('td');
                 
-                let button = document.createElement('button');
-                button.innerText = "Remove";
-                button.className = "btn btn-primary btn-dark btn-outline-danger";
+                let buttonDelete = document.createElement('button');
+                buttonDelete.innerText = "Remove";
+                buttonDelete.className = "btn btn-dark btn-outline-danger";
 
-                button.addEventListener('click', function() {
+                buttonDelete.addEventListener('click', function() {
                     let text = "Are you sure you want to delete '" + doc.id + "'?";
                     if (confirm(text) == true) {
                         deleteFromDB(user, doc.id);
@@ -221,13 +238,24 @@ function pullFromDB(user, selectedSeason, selectedYear) {
                     }
                 })
 
-                rowTd.appendChild(button);
+                let buttonRate = document.createElement('button');
+                buttonRate.innerText = data.PersonalRating;
+                buttonRate.className = "btn btn-dark";
+
+                buttonRate.addEventListener('click', function() {
+                    let rating = prompt("Rating out of 10 for: " + data.Name, data.PersonalRating);
+                    if (rating != null) {
+                        updateRating(user, data, rating)
+                    }
+                })
+
+                rowTd.appendChild(buttonDelete);
                 nameTd.appendChild(document.createTextNode(data.Name));
                 studioTd.appendChild(document.createTextNode(data.Studio));
                 genreTd.appendChild(document.createTextNode(data.Genre));
                 episodesTd.appendChild(document.createTextNode(data.Episodes));
                 malTd.appendChild(document.createTextNode(data.MALRating));
-                personalTd.appendChild(document.createTextNode(data.PersonalRating));
+                personalTd.appendChild(buttonRate);
                 broadcastTd.appendChild(document.createTextNode(data.Broadcasts));
                 
                 tr.appendChild(rowTd);
