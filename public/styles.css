@@ -24,6 +24,38 @@ table {
     width: 100%;
 }
 
+/* Hide the scrollbar by default */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Show the scrollbar on hover */
+.table-responsive:hover::-webkit-scrollbar {
+  display: block;
+}
+
+/* Set the width and height of the scrollbar */
+.table-responsive::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Set the background color of the scrollbar track */
+.table-responsive::-webkit-scrollbar-track {
+  background-color: #202529;
+}
+
+/* Set the background color of the scrollbar thumb */
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 5px;
+}
+
+/* Set the color of the scrollbar thumb on hover */
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa;
+}
+
 /* .dropdown-item {
     white-space: nowrap;
     overflow: hidden;
