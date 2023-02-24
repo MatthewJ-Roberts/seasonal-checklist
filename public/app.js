@@ -65,6 +65,9 @@ auth.onAuthStateChanged((user) => {
         const dropdownYear = document.getElementById("yearDropdown");
         const dropdownSeason = document.getElementById("seasonDropdown");
 
+        let typingTimer;                //timer identifier
+        let doneTypingInterval = 500;  //time in ms (0.5 seconds)
+
         dropdownYear.addEventListener('click', event => {
             selectedYear.innerHTML = event.target.textContent;
             pullFromDB(user, selectedSeason, selectedYear);
@@ -87,9 +90,7 @@ auth.onAuthStateChanged((user) => {
             pullFromDB(user, selectedSeason, selectedYear);
         })
         
-        searchInput.addEventListener('input', event => {
-            event.preventDefault(); // Prevent form submission from reloading the page
-
+        function performSearch() {
             const searchQuery = searchInput.value;
 
             fetch(`https://api.jikan.moe/v4/anime?q=${searchQuery}`)
@@ -111,6 +112,15 @@ auth.onAuthStateChanged((user) => {
                 .catch(error => {
                     console.error(error);
                 });
+        }
+
+        searchInput.addEventListener('input', event => {
+            event.preventDefault(); // Prevent form submission from reloading the page
+
+            clearTimeout(typingTimer);
+            if (searchInput.value) {
+                typingTimer = setTimeout(performSearch, doneTypingInterval);
+            }
             
         });
 
