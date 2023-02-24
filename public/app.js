@@ -44,10 +44,15 @@ let unsubscribe;
 
 var dropdownYearArray = [];
 
+function hideElements(seasonArray) {
+    seasonArray.forEach(element => {
+        element.hidden = true;
+    });
+}
+
 auth.onAuthStateChanged((user) => {
 
     if (user) {
-        
         // Create the "anime" collection
         userRef = database.collection('users').doc(user.uid).collection("anime");
 
@@ -61,14 +66,24 @@ auth.onAuthStateChanged((user) => {
         const dropdownSeason = document.getElementById("seasonDropdown");
 
         dropdownYear.addEventListener('click', event => {
-
             selectedYear.innerHTML = event.target.textContent;
             pullFromDB(user, selectedSeason, selectedYear);
         })
 
         dropdownSeason.addEventListener('click', event => {
-
+            const winterTable = document.getElementById("winterTable");
+            const springTable = document.getElementById("springTable");
+            const summerTable = document.getElementById("summerTable");
+            const fallTable = document.getElementById("fallTable");
+            var seasonArray = [winterTable, springTable, summerTable, fallTable];
+            seasonArray.forEach(element => {
+                element.hidden = false;
+            });
             selectedSeason.innerHTML = event.target.textContent;
+            if (selectedSeason.innerHTML != "All") {
+                seasonArray = seasonArray.filter(item => item.caption.textContent.toLowerCase() !== selectedSeason.innerHTML);
+                hideElements(seasonArray);
+            }
             pullFromDB(user, selectedSeason, selectedYear);
         })
         
